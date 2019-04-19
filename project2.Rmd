@@ -1,0 +1,18 @@
+---
+title: "STA322 Project 2"
+author: "Sherry Huang, Eddie Yang"
+date: "April 2019"
+output:
+    pdf_document:
+    keep_tex: yes
+    latex_engine: xelatex
+---
+
+4 factors, full factorial: 2^4 = 16 possible treatment assignments
+all low / 0, a, b, c, d, ab, ac, ad, bc, bc, abc, abd, acd, bcd, abcd
+5 replicates for each assignment? assume there are interactions, otherwise use half factorial?
+
+a: rotor length = 8.5cm (baseline 7.5cm)
+b: leg length = 12.0cm (baseline 7.5cm)
+c: leg width = 5.0cm (baseline 3.2cm)
+d: paper clip on leg - need to control where we put the paper clip since leg lengths would change based on treatment - 1cm from the bottom? in the middle?
