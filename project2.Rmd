@@ -15,7 +15,7 @@ all low / 0, a, b, c, d, ab, ac, ad, bc, bc, cd, abc, abd, acd, bcd, abcd
 a: rotor length = 8.5cm (baseline 7.5cm)
 b: leg length = 12.0cm (baseline 7.5cm)
 c: leg width = 5.0cm (baseline 3.2cm)
-d: paper clip on leg - need to control where we put the paper clip since leg lengths would change based on treatment - 1cm from the bottom? in the middle?
+d: paper clip on leg - where the lower end of the paper clip aligns with the bottom edge of the leg
 
 ####Introduction
   This study aims to examine the factors that affect how long a paper helicopter can stay in the air. Specifically, four factors: rotor length, leg length, leg width and paper clip are studied. This report includes details of the study design, procedures of data collection, and analysis of estimation results using regression.
@@ -30,7 +30,33 @@ d: paper clip on leg - need to control where we put the paper clip since leg len
   During each trial, we drop the paper helicopter at the height of exactly two meters, and the flight time as measured from the time the helicopter is dropped from some height until the time it hits the floor. The data is recorded in the table below.
   
 ```{r}
-(heliData = read.csv("HeliData.csv"))
+#Read data file with measurements entered by hand
+heliData = read.csv("HeliData.csv", header = TRUE)
+#Convert treatments to factors
+heliData$treatment = as.factor(heliData$treatment)
+heliData$a = as.factor(heliData$a)
+heliData$b = as.factor(heliData$b)
+heliData$c = as.factor(heliData$c)
+heliData$d = as.factor(heliData$d)
+
+#Exploratory Data Analysis
+boxplot(heliData$time ~ heliData$treatment, xlab = "Treatment", ylab = "Fly Time")
+par(mfrow=c(2,2))   
+boxplot(heliData$time ~ heliData$a, xlab = "Rotor Length", ylab = "Fly Time")
+boxplot(heliData$time ~ heliData$b, xlab = "Leg Length", ylab = "Fly Time")
+boxplot(heliData$time ~ heliData$c, xlab = "Leg Width", ylab = "Fly Time")
+boxplot(heliData$time ~ heliData$d, xlab = "Leg Paper Clip", ylab = "Fly Time")
+
+#Regression
+regHeli = lm(time ~ a*b*c*d, data = heliData)
+
+summary(regHeli)
+
+#Residual Plot
+boxplot(regHeli$residual~heliData$treatment, xlab = "Treatment", ylab = "Residuals")
+#Diagnostic Plots
+plot(regHeli)
+
 ```
   
 ####Data Analysis and Results
