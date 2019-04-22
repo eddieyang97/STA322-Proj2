@@ -26,7 +26,9 @@ d: paper clip on leg - need to control where we put the paper clip since leg len
     b: leg length = 12.0cm (baseline 7.5cm)
     c: leg width = 5.0cm (baseline 3.2cm)
     d: paper clip on leg, 1cm from the bottom (baseline no paper clip)
+  
   Because there are four factors with two levels each, there are a total of $2^4 = 16$ total possible treatment assignments. We decide that because we have no prior knowledge of how these factors interact with each other and thus cannot assume their interaction effects are negligible, we use a full factorial design, which allows us to examine all the different interaction effects, for this experiment. We conduct five trials for each of the assignment, which gives us $16 * 5 = 80$ trials in total.
+  
   During each trial, we drop the paper helicopter at the height of exactly two meters, and the flight time as measured from the time the helicopter is dropped from some height until the time it hits the floor. The data is recorded in the table below.
   
 ```{r}
