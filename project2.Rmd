@@ -10,29 +10,74 @@ output:
 
 4 factors, full factorial: 2^4 = 16 possible treatment assignments
 all low / 0, a, b, c, d, ab, ac, ad, bc, bc, cd, abc, abd, acd, bcd, abcd
-5 replicates for each assignment? assume there are interactions, otherwise use half factorial?
+5 replicates for each assignment
+drop from height of 2 meters
 
-a: rotor length = 8.5cm (baseline 7.5cm)
-b: leg length = 12.0cm (baseline 7.5cm)
-c: leg width = 5.0cm (baseline 3.2cm)
-d: paper clip on leg - need to control where we put the paper clip since leg lengths would change based on treatment - 1cm from the bottom? in the middle?
+Which factors seeme to be the most important for making helicopters that fly longer?
+Is there any evidence that the effect of rotor length differs by leg width?
+What would you recommend as the ideal combination to make the helicopter fly long?
 
 ####Introduction
-  This study aims to examine the factors that affect how long a paper helicopter can stay in the air. Specifically, four factors: rotor length, leg length, leg width and paper clip are studied. This report includes details of the study design, procedures of data collection, and analysis of estimation results using regression.
+  This study aims to examine the factors in desgining a paper helicopter that affect how long it can fly in the air. Specifically, the study focuses on four factors: rotor length, leg length, leg width, and whether or not there is a paper clip at the bottom of the leg. This report includes details of the full factorial experiment design, procedures of data collection, and analysis of estimation results using regression modelling.
   
 ####Study Design and Data Collection
-  The factors we want to study in this experiment are:
+  Because there are four factors with two levels each, there are a total of $2^4 = 16$ total possible treatment assignments. Since we have no prior knowledge of how these factors interact with each other and thus cannot assume their interaction effects are negligible, we use a full factorial design, which allows us to examine all main effects and interaction effects, for this experiment. We conduct five trials for each of the assignment, which gives us $16 * 5 = 80$ trials in total.
+  During each trial, we drop the paper helicopter at the height of exactly two meters, and the flight time as measured from the time the helicopter is dropped from some height until the time it hits the floor. The data is recorded in the table below.
+  
+    The factors we want to study in this experiment are:
     a: rotor length = 8.5cm (baseline 7.5cm)
     b: leg length = 12.0cm (baseline 7.5cm)
     c: leg width = 5.0cm (baseline 3.2cm)
-    d: paper clip on leg, 1cm from the bottom (baseline no paper clip)
-  
-  Because there are four factors with two levels each, there are a total of $2^4 = 16$ total possible treatment assignments. We decide that because we have no prior knowledge of how these factors interact with each other and thus cannot assume their interaction effects are negligible, we use a full factorial design, which allows us to examine all the different interaction effects, for this experiment. We conduct five trials for each of the assignment, which gives us $16 * 5 = 80$ trials in total.
-  
-  During each trial, we drop the paper helicopter at the height of exactly two meters, and the flight time as measured from the time the helicopter is dropped from some height until the time it hits the floor. The data is recorded in the table below.
+    d: paper clip on bottom of leg (baseline no paper clip)
   
 ```{r}
-(heliData = read.csv("HeliData.csv"))
+#Randomize treatment assignments
+assignments = c(rep("o",5), rep("a",5), rep("b",5), rep("c",5), rep("d",5),
+                rep("ab",5), rep("ac",5),rep("ad",5), rep("bc",5), rep("bd",5),
+                rep("cd",5), rep("abc",5), rep("abd",5), rep("acd",5), 
+                rep("bcd",5), rep("abcd",5))
+set.seed(322)
+assignments = sample(assignments)
+helidata = data.frame(treatments = assignments, 
+                      a = NA, b = NA, c = NA, d = NA, time = NA)
+write.csv(helidata, file = "helidata.csv")
+
+#Collect data, enter manually, and read file again
+heliData = read.csv("helidata.csv", header = TRUE)
+#Convert treatments to factors
+heliData$treatment = as.factor(heliData$treatments)
+heliData$a = as.factor(heliData$a)
+heliData$b = as.factor(heliData$b)
+heliData$c = as.factor(heliData$c)
+heliData$d = as.factor(heliData$d)
+
+#Exploratory Data Analysis
+boxplot(heliData$time ~ heliData$treatments, xlab = "Treatment", ylab = "Fly Time")
+par(mfrow=c(2,2))   
+boxplot(heliData$time ~ heliData$a, xlab = "Rotor Length", ylab = "Fly Time")
+boxplot(heliData$time ~ heliData$b, xlab = "Leg Length", ylab = "Fly Time")
+boxplot(heliData$time ~ heliData$c, xlab = "Leg Width", ylab = "Fly Time")
+boxplot(heliData$time ~ heliData$d, xlab = "Leg Paper Clip", ylab = "Fly Time")
+
+#Regression
+regHeli = lm(time ~ a*b*c*d, data = heliData)
+
+summary(regHeli)
+
+knitr::kable(data.frame(estimates = regHeli$coefficients,
+                        pvalues = c("<2e-16",0.015218,0.032935,"6.03e-7",0.768488,0.524367,"2.86e-07",
+                                    0.002908,0.459207,0.639734,0.000751,0.005955,0.317770,0.003342,
+                                    0.496702,0.117377)),
+             caption = "Full Factorial Regression Results")
+
+#Residual Plot
+boxplot(regHeli$residual~heliData$treatments, xlab = "Treatment", ylab = "Residuals")
+#Diagnostic Plots
+plot(regHeli)
+
+regHeli$coefficients
+regHeli$effects
+
 ```
   
 ####Data Analysis and Results
