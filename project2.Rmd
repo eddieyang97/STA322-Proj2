@@ -39,11 +39,12 @@ assignments = c(rep("o",5), rep("a",5), rep("b",5), rep("c",5), rep("d",5),
                 rep("bcd",5), rep("abcd",5))
 set.seed(322)
 assignments = sample(assignments)
-heliData = data.frame(treatments = assignments, 
+helidata = data.frame(treatments = assignments, 
                       a = NA, b = NA, c = NA, d = NA, time = NA)
-write.csv(heliData, file = "heliData.csv")
+write.csv(helidata, file = "helidata.csv")
+
 #Collect data, enter manually, and read file again
-heliData = read.csv("HeliData.csv", header = TRUE)
+heliData = read.csv("helidata.csv", header = TRUE)
 #Convert treatments to factors
 heliData$treatment = as.factor(heliData$treatments)
 heliData$a = as.factor(heliData$a)
